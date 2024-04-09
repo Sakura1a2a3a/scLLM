@@ -31,6 +31,11 @@ labels = adata.obs["cell_type"]
 
 label_map = {celltype: i for i, celltype in enumerate(labels.unique())}
 
+reversed_label_map = {i: celltype for celltype, i in label_map.items()}
+
+# with open('label_mapping.json', 'w') as f:
+#     json.dump(reversed_label_map, f)
+
 
 X_train, X_val = train_test_split(gene_expression, test_size=0.9, random_state=1)
 
@@ -74,13 +79,16 @@ class SingleCellClassifier(nn.Module):
 
 
 class CellTypeDataset(Dataset):
-    def __init__(self, expressions, labels):
+    def __init__(self, expressions, labels= None):
         self.expressions = expressions
         self.labels = labels
         self.all_gene_indices = np.arange(len(gene_token_mapping))
 
     def __len__(self):
-        return len(self.labels)
+        # return len(self.labels)
+        return len(self.expressions)
+        
+
 
     def __getitem__(self, index):
         expression = self.expressions[index]
@@ -92,20 +100,30 @@ class CellTypeDataset(Dataset):
         expression = expression[selected_indices]
         input_tokens = input_tokens[selected_indices]
 
-        label = label_map[self.labels[index]]
+
+        if self.labels is not None and not self.labels.empty:
+
+            label = label_map[self.labels[index]]
 
 
 
-        return {
-            'expression': torch.LongTensor(expression),
-            'input_tokens': torch.LongTensor(input_tokens),
-            'label': torch.tensor(label, dtype=torch.long)
-        }
+            return {
+                'expression': torch.LongTensor(expression),
+                'input_tokens': torch.LongTensor(input_tokens),
+                'label': torch.tensor(label, dtype=torch.long)
+            }
+        
+        else:
+            return {
+                'expression': torch.LongTensor(expression),
+                'input_tokens': torch.LongTensor(input_tokens),
+            }
+
     
 
 
 
-num_classes = 19 
+num_classes = 19
 
 model = SingleCellClassifier(
     token_size=len(gene_token_mapping),
@@ -128,36 +146,38 @@ criterion = nn.CrossEntropyLoss()
 
 
 num_epochs = 1
-for epoch in tqdm(range(num_epochs), desc="Epochs"):
-    
-    model.train()
-    total_epoch_loss = 0 
+if __name__ == "__main__":
+    for epoch in tqdm(range(num_epochs), desc="Epochs"):
+        
+        model.train()
+        total_epoch_loss = 0 
 
-    for batch in train_dataloader:
-        input_expression, input_tokens, label = (
-        batch['expression'],
-        batch['input_tokens'],
-        batch['label'],
-    )
-    
-        optimizer.zero_grad()
+        for batch in train_dataloader:
+            input_expression, input_tokens, label = (
+            batch['expression'],
+            batch['input_tokens'],
+            batch['label'],
+        )
+        
+            optimizer.zero_grad()
+
+            
+            predict_cell_type = model(input_tokens, input_expression, None)
+
+            predictions = torch.argmax(predict_cell_type, dim=1)
+
+            for index in predictions:
+                predicted_label = reversed_label_map[index.item()]
+                print("Predicted Cell Type:", predicted_label)
 
         
-        predict_cell_type = model(input_tokens, input_expression, None)
+            loss = criterion(predict_cell_type, label)
+            # print(loss)
+            loss.backward()
+            optimizer.step()
 
+            total_epoch_loss += loss.item()
 
-        # print(predict_cell_type.shape)
- 
-        # print(label.shape)
+        print(f"Epoch {epoch+1}/{num_epochs}, Loss: {total_epoch_loss / len(train_dataloader)}")
 
-      
-        loss = criterion(predict_cell_type, label)
-        # print(loss)
-        loss.backward()
-        optimizer.step()
-
-        total_epoch_loss += loss.item()
-
-    print(f"Epoch {epoch+1}/{num_epochs}, Loss: {total_epoch_loss / len(train_dataloader)}")
-
-torch.save(model.state_dict(), './model/finetune_model_state_dict.pth')
+    # torch.save(model.state_dict(), './model/default_state_dict.pth')
