@@ -1,4 +1,3 @@
-
 import torch
 import numpy as np
 import pandas as pd
@@ -8,6 +7,8 @@ import json
 import scanpy as sc
 import torch.nn as nn
 import torch.optim as optim
+import matplotlib.pyplot as plt
+from sklearn.decomposition import PCA
 from torch.utils.data import DataLoader, Dataset
 
 from finetune import SingleCellClassifier, CellTypeDataset
@@ -59,7 +60,8 @@ def predict_method(dataset = './data/demo.h5ad', batch_size = 6, model_path = '.
 
     model.eval()
 
-    result = []
+    all_predictions = []
+    all_expressions = []
 
     for batch in test_dataloader:
         input_expression, input_tokens= (
@@ -71,13 +73,42 @@ def predict_method(dataset = './data/demo.h5ad', batch_size = 6, model_path = '.
             predict_cell_type = model(input_tokens, input_expression, None)
             predictions = torch.argmax(predict_cell_type, dim=1)
 
+            all_predictions.extend([reversed_label_map[index.item()] for index in predictions])
+            all_expressions.append(input_expression)
+    
 
-            for index in predictions:
-                predicted_label = reversed_label_map[index.item()]
-                result.append(predicted_label)
+    all_expressions = torch.cat(all_expressions, dim=0).numpy()
 
-    df = pd.DataFrame({'Predicted Cell Type': result})
-    df.to_csv(out_path, index=False)
+    pca = PCA(n_components=2)
+
+    principal_components = pca.fit_transform(all_expressions)
+
+    df_pca = pd.DataFrame(data=principal_components, columns=['Principal Component 1', 'Principal Component 2'])
+    df_pca['Predicted Cell Type'] = all_predictions
+
+    df_pca.to_csv(out_path, index=False)
+
+
+    plt.figure(figsize=(10, 8))
+    scatter = plt.scatter(df_pca['Principal Component 1'], df_pca['Principal Component 2'], 
+                        alpha=0.8, 
+                        c=pd.Categorical(df_pca['Predicted Cell Type']).codes, 
+                        cmap='viridis',
+                        s=10)
+    plt.title('PCA of Predicted Cell Types')
+    plt.xlabel('Principal Component 1')
+    plt.ylabel('Principal Component 2')
+
+    categories = pd.Categorical(df_pca['Predicted Cell Type']).categories.tolist()
+    plt.legend(handles=scatter.legend_elements()[0], labels=categories)
+
+    plt.xlim(-8, 8)
+    plt.ylim(-8, 8)
+
+    plt.savefig('pca.png', format='png', dpi=300)
+    # plt.show()
+
+    print("Prediction Done!")
 
 
 
@@ -108,6 +139,8 @@ def further_tune(dataset = './data/demo.h5ad', batch_size = 6, learning_rate = 0
     optimizer = optim.Adam(model.parameters(), lr=learning_rate)
     criterion = nn.CrossEntropyLoss()
 
+    epoch_losses = []
+
     num_epochs =  num_epochs
 
     
@@ -132,7 +165,7 @@ def further_tune(dataset = './data/demo.h5ad', batch_size = 6, learning_rate = 0
 
             for index in predictions:
                 predicted_label = reversed_label_map[index.item()]
-                print("Predicted Cell Type:", predicted_label)
+                # print("Predicted Cell Type:", predicted_label)
 
         
             loss = criterion(predict_cell_type, label)
@@ -141,9 +174,22 @@ def further_tune(dataset = './data/demo.h5ad', batch_size = 6, learning_rate = 0
 
             total_epoch_loss += loss.item()
 
-        print(f"Epoch {epoch+1}/{num_epochs}, Loss: {total_epoch_loss / len(train_dataloader)}")
+        epoch_loss = total_epoch_loss / len(train_dataloader)
+        epoch_losses.append(epoch_loss)
+        print(f"Epoch {epoch+1}/{num_epochs}, Loss: {epoch_loss}")
 
     torch.save(model.state_dict(), model_path)
+
+    plt.figure(figsize=(10, 5))
+    plt.plot(range(1, num_epochs + 1), epoch_losses, marker='o', label='Training Loss')
+    plt.xlabel('Epoch')
+    plt.ylabel('Loss')
+    plt.title('Training Loss Across Epochs')
+    plt.legend()
+    plt.grid(True)
+    plt.savefig('loss.png', format='png', dpi=300)
+    # plt.show()
+
 
 
 

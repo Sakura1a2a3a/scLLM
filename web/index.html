@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Dhurjati&family=Rubik+Microbe&family=Smooch+Sans:wght@600&family=Vina+Sans&display=swap" rel="stylesheet">
+        <link rel="stylesheet" href="index.css">
+        <title>scLLM</title>
+    </head>
+    <body>
+        <div id="title-div">
+            <h1 id="title">scLLM</h1>
+            <h2 id="sec-title">Advanced Cell Type Annotation</h2>
+        </div>
+        <div id="input-slot" class="border-div">
+            <div id="mode-div" class="sec-title">
+                <h5 id="mode-1">Cell-Type Prediction</h5>
+                <h5 id="mode-2">Fune Tune Model</h5>
+            </div>
+            <div id="address-div">
+                <p>Dataset:</p>
+                <button type="button" id="select-file" class="btn-main">Select</button>
+                <select name="sample" id="sample">
+                    <option value="none" selected>Choose from sample(optional)</option>
+                    <option value="SampleData1.txt">Dataset 1</option>
+                    <option value="SampleData2.txt">Dataset 2</option>
+                </select>
+                <button id="clear-input-1" class="btn-main">Clear</button>
+            </div>
+            <div id="param">
+                <div id="bs">
+                    <p>Batch Size: </p>
+                    <input type="number" id="batch-size" value="1"/>
+                </div>
+                <div id="default-check">
+                    <p>Default Model</p>
+                    <input type="checkbox" id="default-model" checked>
+                </div>
+                <div id="model-div">
+                    <p>Choose Model: </p>
+                    <button type="button" id="select-model" class="btn-main">Select</button>
+                </div>
+                <div id="result-div">
+                    <p id="output-p">Prediction Result File Name: </p>
+                    <input type="text" id="output-title" value="Untitled"/>
+                </div>
+                <button id="clear-input-2" class="btn-main">Clear</button>
+            </div>
+            <div id="add-param">
+                <div id="lr">
+                    <p>Learning Rate: </p>
+                    <select name="learning-rate" id="learning-rate">
+                        <option value="0.1" selected>0.1</option>
+                        <option value="0.01">0.01</option>
+                        <option value="0.001">0.001</option>
+                    </select>
+                </div>
+                <div id="epoch-div">
+                    <p>Num of Epoch: </p>
+                    <input type="number" id="num-epoch" value="1"/>
+                </div>
+                <button id="clear-input-3" class="btn-main">Clear</button>
+            </div>
+            <button id="submit" class="btn-main">Start Prediction</button>
+        </div>
+        <div id="output-div" class="border-div">
+            <div class="sec-title"><h3>Prediction Output</h1></div>
+            <p id="output"></p>
+        </div>
+    </body>
+    <script type="text/javascript" src="/eel.js"></script>
+    <script src="index.js"></script>
+</html>

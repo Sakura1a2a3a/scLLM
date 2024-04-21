@@ -1,0 +1,191 @@
+#address-div{
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    width: 90%;
+    margin: auto;
+}
+
+#address-div p{
+    margin-right: 10px;
+}
+
+#input-slot, #output-div{
+    text-align: center;
+    width: 100%;
+    margin-bottom: 10px;
+}
+
+#param, #bs, #default-check, #result-div, #lr, #epoch-div{
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+}
+
+#model-div, #add-param{
+    display: none;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+}
+
+#bs, #default-check, #result-div, #model-div, #lr, #epoch-div{
+    margin-left: 10px;
+    margin-right: 10px;
+}
+
+#default-model{
+    height: 20px;
+    width: 20px;
+}
+
+#param {
+    flex-wrap: wrap;
+}
+
+#learning-rate{
+    margin-left: 10px;
+}
+
+#param{
+    width: 90%;
+    margin: 10px auto;
+}
+
+#epoch-input{
+    margin-left: 30px;
+}
+
+#num-epoch{
+    margin-left: 10px;
+    width: 70px;
+}
+
+#data-set-address{
+    width: 400px;
+}
+
+#sample{
+    margin-left: 10px;
+}
+
+#title-div{
+    text-align: center;
+    width: 100%;
+    background-color: #790101;
+    color: #9BB2F8;
+}
+
+#title{
+    font-family: Rubik Microbe;
+    font-size: 100px;
+    margin-top: 0px;
+}
+
+#sec-title{
+    font-family: Dhurjati;
+    font-size: 30px;
+    margin-top: -116px;
+}
+
+.border-div{
+    border-color: #790101;
+    border-style: solid;
+}
+
+.btn-main{
+    margin: 10px 10px;
+    background-color: #790101;
+    color: #9BB2F8;
+    font-family: Smooch Sans;
+    font-size: 25px;
+}
+
+#mode-1{
+    margin: 10px 0px;
+    background-color: #9BB2F8;
+    color: #790101;
+    border-color: #9BB2F8;
+    border: solid;
+    font-family: Smooch Sans;
+    font-size: 35px;
+    padding: 5px 15px;
+}
+
+#mode-2{
+    margin: 10px 0px;
+    background-color: #790101;
+    color: #9BB2F8;
+    border-color: #9BB2F8;
+    border: solid;
+    font-family: Smooch Sans;
+    font-size: 35px;
+    padding: 5px 15px;
+}
+
+h4, p, select, input{
+    color: #237194;
+}
+
+h4, p, select{
+    font-family: Smooch Sans;
+    font-size: 30px;
+}
+
+input{
+    font-family: Smooch Sans;
+    font-size: 25px;
+    padding-left: 10px;
+    padding-right: 10px;
+    margin-left: 10px;
+}
+
+#batch-size{
+    width: 50px;
+}
+
+h3{
+    font-family: Smooch Sans;
+    margin: 10px 10px;
+    font-size: 35px;
+}
+
+#clear-input-1{
+    margin: auto 20px;
+}
+
+#clear-input-2{
+    margin: auto 20px;
+}
+
+#clear-input-3{
+    margin: auto 20px;
+}
+
+
+#output{
+    height: 300px;
+    width: 80%;
+    border-color: #790101;
+    border-style: solid;
+    margin: 20px auto;
+    text-align: start;
+    padding: 10px;
+}
+
+.sec-title{
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    background-color: #790101;
+    width: 100%;
+    margin-top: 0%;
+    padding: 10px 0px;
+}
+
+.sec-title h3{
+    color: #9BB2F8;
+}
